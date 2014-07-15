@@ -12,20 +12,27 @@ describe Tmplt do
     expect { Tmplt.render("{{ 0 }}", data) }.to raise_error(ArgumentError)
   end
 
-  it "should replace the tag with the corresponding value in the data hash" do
-    data = { :foo => "bar" }
+  it "should replace the tag with the empty string if the tag is not in the data hash" do
+    data = {}
+    expect(Tmplt.render("{{ foo }}", data)).to eq("")
+  end
+
+  it "should allow string tag names" do
+    data = { "foo" => "bar" }
     expect(Tmplt.render("{{ foo }}", data)).to eq("bar")
     expect(Tmplt.render("{{foo}}", data)).to eq("bar")
   end
 
-  it "should be a global replace" do
-    data = { :foo => "bar" }
-    expect(Tmplt.render("{{ foo }} {{ foo }}", data)).to eq("bar bar")
+  it "should allow whitespace within the string tag name" do
+    data = { "foo bar" => "baz" }
+    expect(Tmplt.render("{{ foo bar }}", data)).to eq("baz")
+    expect(Tmplt.render("{{foo bar}}", data)).to eq("baz")
   end
 
-  it "should replace the tag with the empty string if the tag is not in the data hash" do
-    data = {}
-    expect(Tmplt.render("{{ foo }}", data)).to eq("")
+  it "should allow symbol tag names" do
+    data = { :foo => "bar" }
+    expect(Tmplt.render("{{ foo }}", data)).to eq("bar")
+    expect(Tmplt.render("{{ :foo }}", data)).to eq("bar")
   end
 
   it "should allow numeric tag names" do
@@ -33,10 +40,9 @@ describe Tmplt do
     expect(Tmplt.render("{{ 0 }}", data)).to eq("foo")
   end
 
-  it "should allow whitespace within the tag name" do
-    data = { "foo bar" => "baz" }
-    expect(Tmplt.render("{{ foo bar }}", data)).to eq("baz")
-    expect(Tmplt.render("{{foo bar}}", data)).to eq("baz")
+  it "should be a global replace" do
+    data = { :foo => "bar" }
+    expect(Tmplt.render("{{ foo }} {{ foo }}", data)).to eq("bar bar")
   end
 
   it "should match the string key and not the symbol key if the two keys have the same name" do
@@ -72,7 +78,7 @@ describe Tmplt do
     expect(Tmplt.render("{{ baz }}", data)).to eq("qux quux")
   end
 
-  it "should interpolate nested keys" do
+  it "should interpolate values corresponding to nested keys" do
     data = {
       :foo => {
         "bar baz" => {
@@ -82,6 +88,7 @@ describe Tmplt do
     }
     expect(Tmplt.render("{{ foo.bar baz.qux }}", data)).to eql("quux")
     expect(Tmplt.render("{{foo . bar baz . qux}}", data)).to eql("quux")
+    expect(Tmplt.render("{{ foo. bar baz .qux }}", data)).to eql("quux")
   end
 
 end
