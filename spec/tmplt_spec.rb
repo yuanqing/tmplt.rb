@@ -23,7 +23,7 @@ describe Tmplt do
     expect(Tmplt.render("{{ foo }} {{ foo }}", data)).to eq("bar bar")
   end
 
-  it "should replace the tag with the empty string if the tag is not found in the data" do
+  it "should replace the tag with the empty string if the tag is not in the data hash" do
     data = {}
     expect(Tmplt.render("{{ foo }}", data)).to eq("")
   end
@@ -63,7 +63,7 @@ describe Tmplt do
     expect(Tmplt.render("{{ foo }}{{ bar }}", data)).to eq("3.14159")
   end
 
-  it "should interpolate Proc values" do
+  it "should interpolate proc values" do
     data = {
       :foo => "qux",
       :bar => "quux",
