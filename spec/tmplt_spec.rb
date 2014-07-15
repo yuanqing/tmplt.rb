@@ -1,4 +1,4 @@
-require "tmplt"
+require "spec_helper"
 
 describe Tmplt do
 
