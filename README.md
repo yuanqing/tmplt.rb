@@ -7,7 +7,9 @@
 Straight-up substitution, nothing more. Here&rsquo;s a slightly contrived example:
 
 ```rb
-tmpl = "{{ foo }}, {{ bar.baz }}!"
+require 'tmplt'
+
+tmpl = "{{ foo }}, {{ baz.qux }}!"
 data = {
   :foo => "Hello",
   :bar => "World",
