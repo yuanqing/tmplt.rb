@@ -3,9 +3,9 @@ class Tmplt
   class << self
 
     def render(tmpl, data)
-      raise ArgumentError unless tmpl.is_a?(String) && (data.is_a?(Hash))
+      raise ArgumentError unless tmpl.is_a?(String) && (data.is_a?(Hash) || data.is_a?(Array))
       tmpl.gsub(/{{(.+?)}}/) do
-        val = access(data, $1)
+        val = follow_path(data, $1)
         if val.is_a?(Proc)
           val = val.call(data)
         end
@@ -19,7 +19,7 @@ class Tmplt
       true if Float(obj) rescue false
     end
 
-    def access(data, keys)
+    def follow_path(data, keys)
       keys.split(".").each do |key|
         key.strip!
         if key.start_with?(":")

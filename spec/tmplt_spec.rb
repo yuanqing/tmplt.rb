@@ -7,14 +7,15 @@ describe Tmplt do
     expect { Tmplt.render(1, data) }.to raise_error(ArgumentError)
   end
 
-  it "should raise an ArgumentError if data is not a hash" do
-    data = []
-    expect { Tmplt.render("{{ 0 }}", data) }.to raise_error(ArgumentError)
+  it "should raise an ArgumentError if data is not a hash or an array" do
+    expect { Tmplt.render("{{ foo }}", 1) }.to raise_error(ArgumentError)
   end
 
-  it "should replace the tag with the empty string if the tag is not in the data hash" do
+  it "should replace the tag with the empty string if the tag is not in the data hash or array" do
     data = {}
     expect(Tmplt.render("{{ foo }}", data)).to eq("")
+    data = []
+    expect(Tmplt.render("{{ 0 }}", data)).to eq("")
   end
 
   it "should allow string tag names" do
@@ -38,11 +39,16 @@ describe Tmplt do
   it "should allow numeric tag names" do
     data = { 0 => "foo" }
     expect(Tmplt.render("{{ 0 }}", data)).to eq("foo")
+    data = [ "foo", "bar" ]
+    expect(Tmplt.render("{{ 1 }}", data)).to eq("bar")
+    expect(Tmplt.render("{{1}}", data)).to eq("bar")
   end
 
   it "should be a global replace" do
     data = { :foo => "bar" }
     expect(Tmplt.render("{{ foo }} {{ foo }}", data)).to eq("bar bar")
+    data = [ "foo", "bar" ]
+    expect(Tmplt.render("{{ 1 }} {{ 1 }}", data)).to eq("bar bar")
   end
 
   it "should match the string key and not the symbol key if the two keys have the same name" do
@@ -80,15 +86,16 @@ describe Tmplt do
 
   it "should interpolate values corresponding to nested keys" do
     data = {
-      :foo => {
-        "bar baz" => {
-          :qux => "quux"
+      :foo => [
+        {
+          "bar baz" => {
+            :qux => "quux"
+          }
         }
-      }
+      ]
     }
-    expect(Tmplt.render("{{ foo.bar baz.qux }}", data)).to eql("quux")
-    expect(Tmplt.render("{{foo . bar baz . qux}}", data)).to eql("quux")
-    expect(Tmplt.render("{{ foo. bar baz .qux }}", data)).to eql("quux")
+    expect(Tmplt.render("{{ foo.0.bar baz.qux }}", data)).to eql("quux")
+    expect(Tmplt.render("{{ foo . 0 . bar baz . qux }}", data)).to eql("quux")
   end
 
 end
