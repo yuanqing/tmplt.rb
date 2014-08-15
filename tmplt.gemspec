@@ -1,11 +1,11 @@
 Gem::Specification.new do |spec|
 
   spec.name          = "tmplt"
-  spec.version       = "0.0.1"
+  spec.version       = "0.1.0"
   spec.authors       = ["yuanqing"]
   spec.email         = ["hello@yuanqing.sg"]
-  spec.summary       = "Interpolate values from a hash into a template string."
-  spec.homepage      = "https://github.com/yuanqing/tmplt"
+  spec.summary       = "Interpolate values from a hash or array into a template string."
+  spec.homepage      = "https://github.com/yuanqing/tmplt.rb"
   spec.license       = "MIT"
 
   spec.files         = Dir["LICENSE", "README.md", "lib/*"]
